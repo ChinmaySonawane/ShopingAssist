@@ -1,0 +1,14 @@
+CREATE TABLE product (
+  product_id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  price FLOAT NOT NULL,
+  type TEXT NOT NULL,
+  rating INT DEFAULT 0
+);
+
+CREATE TABLE reviews (
+  review_id SERIAL PRIMARY KEY,
+  reviewer_name TEXT NOT NULL,
+  review TEXT NOT NULL,
+  product_id INT REFERENCES product(product_id)
+);
