@@ -2,7 +2,6 @@ package product
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/derekparker/delve/pkg/proc"
 	_ "github.com/lib/pq"
 )
@@ -16,7 +15,7 @@ type Product struct {
 }
 
 func Insert(db *sql.DB, proc Product) error {
-	fmt.Println("In inset")
+	//fmt.Println("In inset")
 	sqlStatement := `
 	INSERT INTO product (name , price, type, rating)
 	VALUES ($1, $2, $3, $4) RETURNING product_id`
@@ -25,7 +24,6 @@ func Insert(db *sql.DB, proc Product) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("insert in product")
 	return nil
 }
 
@@ -39,7 +37,6 @@ func Select(db *sql.DB, id int) (Product, error) {
 	if err != nil {
 		return prod, err
 	}
-	fmt.Println(prod)
 	return prod, nil
 }
 
@@ -66,7 +63,6 @@ func Delete(db *sql.DB, id int) error {
 	sqlStatement := `DELETE FROM product WHERE product_id = $1;`
 	_, err := db.Exec(sqlStatement, id)
 	if err != nil {
-
 		return err
 	}
 	return nil

@@ -16,6 +16,7 @@ import (
 
 var db *sql.DB
 
+//database initilization
 func init() {
 	d, err := database.Connect()
 	if err != nil {
@@ -27,7 +28,7 @@ func init() {
 }
 
 func main() {
-
+	//close connnection
 	defer func() {
 		err := db.Close()
 		if err != nil {
@@ -36,6 +37,7 @@ func main() {
 		fmt.Println("closing")
 	}()
 
+	//hundle func
 	r := mux.NewRouter()
 	r.HandleFunc("/", ping)
 	r.HandleFunc("/product", GetProducts).Methods("GET")
@@ -57,37 +59,6 @@ func main() {
 		fmt.Println("Cannot ping db: ", err)
 		os.Exit(0)
 	}
-	/*
-		err = product.Insert(db)
-		if err != nil {
-			fmt.Println("cant insert user", err)
-		}
-
-		err = product.List(db)
-		if err != nil {
-			fmt.Println("erreor while selecting all")
-		}
-
-		err = product.Select(db, 1)
-		if err != nil {
-			fmt.Println("erreor while selecting all")
-		}
-
-		err = reviews.Insert(db)
-		if err != nil {
-			fmt.Println("cant insert user", err)
-		}
-
-		err = reviews.List(db)
-		if err != nil {
-			fmt.Println("erreor while selecting all")
-		}
-
-		err = reviews.Select(db, 1)
-		if err != nil {
-			fmt.Println("erreor while selecting all")
-		}
-	*/
 }
 
 func ping(w http.ResponseWriter, req *http.Request) {
@@ -95,8 +66,8 @@ func ping(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetProducts(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintln(w, "get products")
-	fmt.Println("get products")
+	fmt.Fprintln(w, "products list")
+	//fmt.Println("get products")
 	prod, err := product.List(db)
 	if err != nil {
 		fmt.Fprintln(w, "error while product listing")
@@ -107,22 +78,24 @@ func GetProducts(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetRelations(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintln(w, "get all")
-	fmt.Println("get all")
+	//fmt.Fprintln(w, "get all")
+	//fmt.Println("get all")
 	prod, err := relation.List(db)
 	if err != nil {
 		fmt.Fprintln(w, "error while product listing")
 	}
 	for _, p := range prod {
+		fmt.Fprintln(w, "Product")
 		fmt.Fprintln(w, p.Prod)
 		for _, r := range p.Review {
+			fmt.Fprintln(w, "Reviews")
 			fmt.Fprintln(w, r)
 		}
 	}
 }
 
 func PostProduct(w http.ResponseWriter, req *http.Request) {
-	fmt.Println("post product")
+	//fmt.Println("post product")
 	var prod product.Product
 	/*b := Byte(req.Body)
 	for key, _ := range req.Form {
@@ -152,9 +125,10 @@ func PostProduct(w http.ResponseWriter, req *http.Request) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("inserted")
+	fmt.Fprintln(w, "inserted successfully")
 }
 
+//to parse id from url or request(url in request)
 func getId(req *http.Request) (int, error) {
 	vars := mux.Vars(req)
 	id := vars["id"]
@@ -171,11 +145,14 @@ func getId(req *http.Request) (int, error) {
 func GetProduct(w http.ResponseWriter, req *http.Request) {
 	id, err := getId(req)
 	if err != nil {
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 	prod, err := product.Select(db, id)
 	if err != nil {
-		fmt.Println("Error")
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 	fmt.Fprintln(w, prod)
@@ -184,27 +161,35 @@ func GetProduct(w http.ResponseWriter, req *http.Request) {
 func DeleteProduct(w http.ResponseWriter, req *http.Request) {
 	id, err := getId(req)
 	if err != nil {
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 
 	err = reviews.DeleteP(db, id)
 	if err != nil {
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 
 	err = product.Delete(db, id)
 	if err != nil {
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 	fmt.Fprintln(w, "delete successfully")
 }
 
 func GetReviews(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintln(w, "get ")
-	fmt.Println("get ")
+	fmt.Fprintln(w, "Reviews:\n")
+	//fmt.Println("get ")
 	review, err := reviews.List(db)
 	if err != nil {
-		fmt.Fprintln(w, "error while product listing")
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
+		return
 	}
 	for _, r := range review {
 		fmt.Fprintln(w, r)
@@ -212,7 +197,7 @@ func GetReviews(w http.ResponseWriter, req *http.Request) {
 }
 
 func PostReview(w http.ResponseWriter, req *http.Request) {
-	fmt.Println("post reviews")
+	//fmt.Println("post reviews")
 	var review reviews.Review
 	/*b := Byte(req.Body)
 	for key, _ := range req.Form {
@@ -233,41 +218,50 @@ func PostReview(w http.ResponseWriter, req *http.Request) {
 	*/
 	err := json.NewDecoder(req.Body).Decode(&review)
 	if err != nil {
-		fmt.Println("Error")
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 	fmt.Println(review)
 	err = reviews.Insert(db, review)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
 		return
 	}
-	fmt.Println("inserted")
+	fmt.Println("reviews inserted successfully")
 }
 
 func GetReview(w http.ResponseWriter, req *http.Request) {
 	id, err := getId(req)
 	if err != nil {
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 	review, err := reviews.Select(db, id)
 	if err != nil {
-		fmt.Println("Error")
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
 		return
 	}
-	fmt.Fprintln(w, review)
+	fmt.Fprintln(w, "Reviews", review)
 }
 
 func DeleteReview(w http.ResponseWriter, req *http.Request) {
 	id, err := getId(req)
 	if err != nil {
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 
 	err = reviews.Delete(db, id)
 	if err != nil {
+		fmt.Fprintln(w, "Error:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 
-	fmt.Fprintln(w, "delete successfully")
+	fmt.Fprintln(w, "Review delete successfully")
 }

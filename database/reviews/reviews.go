@@ -2,9 +2,9 @@ package reviews
 
 import (
 	"database/sql"
-	"fmt"
 )
 
+//reviewer struct
 type Review struct {
 	ReviewID     int    `json:"rid"`
 	ReviewerName string `json:"name"`
@@ -13,6 +13,7 @@ type Review struct {
 	ProductID    int    `json:"pid"`
 }
 
+//insert for review
 func Insert(db *sql.DB, review Review) error {
 	sqlStatement := `
 	INSERT INTO reviews ( reviewer_name, review, rating, product_id)
@@ -22,10 +23,11 @@ func Insert(db *sql.DB, review Review) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("insert in reviews")
+	//fmt.Println("insert in reviews")
 	return nil
 }
 
+//selecting particular review
 func Select(db *sql.DB, id int) (Review, error) {
 	var review Review
 	sqlStatement := `
@@ -36,10 +38,11 @@ func Select(db *sql.DB, id int) (Review, error) {
 	if err != nil {
 		return review, err
 	}
-	fmt.Println(review)
+	//fmt.Println(review)
 	return review, nil
 }
 
+//selecting all reviews
 func List(db *sql.DB) ([]Review, error) {
 	review := make([]Review, 0)
 	sqlStatement := `SELECT * FROM reviews`
@@ -59,6 +62,7 @@ func List(db *sql.DB) ([]Review, error) {
 	return review, nil
 }
 
+//delete reviews as per product id
 func DeleteP(db *sql.DB, no int) error {
 	sqlStatement := `DELETE FROM reviews WHERE product_id = $1;`
 	_, err := db.Exec(sqlStatement, no)
@@ -68,6 +72,7 @@ func DeleteP(db *sql.DB, no int) error {
 	return nil
 }
 
+//delete specific review
 func Delete(db *sql.DB, no int) error {
 	sqlStatement := `DELETE FROM reviews WHERE review_id = $1;`
 	_, err := db.Exec(sqlStatement, no)
