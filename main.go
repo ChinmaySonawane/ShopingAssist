@@ -59,6 +59,13 @@ func main() {
 		fmt.Println("Cannot ping db: ", err)
 		os.Exit(0)
 	}
+
+	/*err = product.Update(db)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println("Update")*/
 }
 
 func ping(w http.ResponseWriter, req *http.Request) {
@@ -183,7 +190,7 @@ func DeleteProduct(w http.ResponseWriter, req *http.Request) {
 }
 
 func GetReviews(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintln(w, "Reviews:\n")
+	fmt.Fprintln(w, "Reviews:\t")
 	//fmt.Println("get ")
 	review, err := reviews.List(db)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
+//product struct
 type Product struct {
 	ProductID   int     `json:"pid"`
 	Name        string  `json:"name"`
@@ -14,6 +15,7 @@ type Product struct {
 	Rating      int     `json:"rating"`
 }
 
+//insert for product
 func Insert(db *sql.DB, proc Product) error {
 	//fmt.Println("In inset")
 	sqlStatement := `
@@ -27,6 +29,7 @@ func Insert(db *sql.DB, proc Product) error {
 	return nil
 }
 
+//selecting perticular product
 func Select(db *sql.DB, id int) (Product, error) {
 	var prod Product
 	sqlStatement := `
@@ -40,6 +43,7 @@ func Select(db *sql.DB, id int) (Product, error) {
 	return prod, nil
 }
 
+//selecting all products
 func List(db *sql.DB) ([]Product, error) {
 	prods := make([]Product, 0)
 	sqlStatement := `SELECT * FROM product`
@@ -59,6 +63,7 @@ func List(db *sql.DB) ([]Product, error) {
 	return prods, nil
 }
 
+//delete particular product
 func Delete(db *sql.DB, id int) error {
 	sqlStatement := `DELETE FROM product WHERE product_id = $1;`
 	_, err := db.Exec(sqlStatement, id)
@@ -67,3 +72,14 @@ func Delete(db *sql.DB, id int) error {
 	}
 	return nil
 }
+
+/*func Update(db *sql.DB) error {
+	sqlStatement := `UPDATE product
+	SET rating = $2
+	WHERE product_id = $1`
+	_, err := db.Exec(sqlStatement, 1, "type", 1)
+	if err != nil {
+		return err
+	}
+	return nil
+}*/
